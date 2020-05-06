@@ -1,5 +1,6 @@
 package;
 
+import haxe.SysTools;
 import kha.Assets;
 import kha.Framebuffer;
 import kha.Scheduler;
@@ -11,7 +12,7 @@ class Main {
 	static function render(frames:Array<Framebuffer>):Void {}
 
 	public static function main() {
-		System.start({title: "Project", width: 1024, height: 768}, 
+		System.start({title: "Project", width: 768, height: 432}, 
 		function(_) {
 			// Just loading everything is ok for small projects
 			Assets.loadEverything(function() {

@@ -1,4 +1,11 @@
+package;
+
+import haxe.Constraints.FlatEnum;
+import kha.ScreenCanvas;
+import kha.ScreenRotation;
+import kha.System;
 import kha.Color;
+import kha.Display;
 import kha.Assets;
 import kha.Framebuffer;
 import kha.graphics2.Graphics;
@@ -10,14 +17,22 @@ import js.Browser.window;
 #end
 
 import zui.*;
+import Length.Length;
 
 class Project {
     public var ui: Zui;
     
     public function new(): Void {
-        // setFullWindowCanvas();
-
-        ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: 4});
+        setFullWindowCanvas();
+        var lengths = new Length();
+        var device = lengths.device_type();
+        var scaleFactor : Float;
+        switch device {
+            case Laptop: scaleFactor = 1.5;
+            case Tablet: scaleFactor = 3;
+            case Mobile: scaleFactor = 4;
+        }
+        ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
     }
 
 	public function update(): Void {
@@ -32,14 +47,27 @@ class Project {
     
     public function gui(graphics: Graphics) : Void {
         ui.begin(graphics);
-        if( ui.window(Id.handle(), 0, 500, 1024, 768) ){
-            if(ui.check(Id.handle(), "Hello!")) {
+        if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
+        
+            if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
                 ui.text("World!");
             }
             ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
+            ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
+            ui.text(Std.string(Display.primary.height)+' height');
+            ui.text(Std.string(Display.primary.width)+' width');
+            ui.text(Std.string(Display.primary.name)+' name');
+            ui.text(Std.string(System.screenRotation)+' degree');
+            ui.text(Std.string(System.windowHeight())+' height');
+            ui.text(Std.string(System.windowWidth())+' width');
+            ui.text(Std.string(ScreenCanvas.the.height)+' height');
+            ui.text(Std.string(ScreenCanvas.the.width)+' width');
         }
+
         ui.end();
     }
+
+    
 
     static function setFullWindowCanvas():Void {
 		#if kha_html5
