@@ -47,8 +47,9 @@ class Project {
     
     public function gui(graphics: Graphics) : Void {
         ui.begin(graphics);
-        if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
         
+        // if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
+        if( ui.window(Id.handle(), 10, 10, 100, 300) ){
             if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
                 ui.text("World!");
             }
@@ -64,6 +65,12 @@ class Project {
             ui.text(Std.string(ScreenCanvas.the.width)+' width');
         }
 
+        if( ui.window(Id.handle(), 410, 110, 150, 100) ){
+            if(ui.check(Id.handle(), "Hello!")) {
+                ui.text("World!");
+            }
+            ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
+        }
         ui.end();
     }
 
