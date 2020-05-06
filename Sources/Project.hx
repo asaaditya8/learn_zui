@@ -50,25 +50,53 @@ class Project {
         
         if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
         // if( ui.window(Id.handle(), 10, 10, 100, 300) ){
-            if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
-                ui.text("World!");
-            }
-            ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
+            // if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
+            //     ui.text("World!");
+            // }
+            // ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
 
-            var ratios : Array<Float> = [0.5, 0.5];
-            ui.row(ratios);
-            ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
-            ui.text(Std.string(Display.primary.height)+' height');
-            ui.row(ratios);
-            ui.text(Std.string(Display.primary.width)+' width');
-            ui.text(Std.string(Display.primary.name)+' name');
-            ui.row(ratios);
-            ui.text(Std.string(System.screenRotation)+' degree');
-            ui.text(Std.string(System.windowHeight())+' height');
-            ui.row(ratios);
-            ui.text(Std.string(System.windowWidth())+' width');
-            ui.text(Std.string(ScreenCanvas.the.height)+' height');
-            ui.text(Std.string(ScreenCanvas.the.width)+' width');
+            // var ratios : Array<Float> = [0.5, 0.5];
+            // ui.row(ratios);
+            // ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
+            // ui.text(Std.string(Display.primary.height)+' height');
+            // ui.row(ratios);
+            // ui.text(Std.string(Display.primary.width)+' width');
+            // ui.text(Std.string(Display.primary.name)+' name');
+            // ui.row(ratios);
+            // ui.text(Std.string(System.screenRotation)+' degree');
+            // ui.text(Std.string(System.windowHeight())+' height');
+            // ui.row(ratios);
+            // ui.text(Std.string(System.windowWidth())+' width');
+            // ui.text(Std.string(ScreenCanvas.the.height)+' height');
+            // ui.text(Std.string(ScreenCanvas.the.width)+' width');
+            var htab = Id.handle({position: 0});
+			if (ui.tab(htab, "Tab 1")) {
+				ui.button("A");
+				ui.button("B");
+				ui.button("C");
+			}
+			if (ui.tab(htab, "Tab 2")) {
+				ui.button("D");
+				ui.button("E");
+				ui.button("F");
+				ui.button("G");
+				ui.button("H");
+				ui.button("J");
+				ui.button("K");
+				ui.button("L");
+				ui.button("M");
+				ui.button("N");
+				ui.button("O");
+				ui.button("P");
+				ui.button("Q");
+				ui.button("R");
+				ui.button("S");
+			}
+			if (ui.tab(htab, "Another Tab")) {
+				ui.text("Lorem ipsum dolor sit amet");
+				ui.check(Id.handle(), "Check Box 1");
+				ui.check(Id.handle(), "Check Box 2");
+			}
         }
 
         ui.end();
