@@ -48,29 +48,29 @@ class Project {
     public function gui(graphics: Graphics) : Void {
         ui.begin(graphics);
         
-        // if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
-        if( ui.window(Id.handle(), 10, 10, 100, 300) ){
+        if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
+        // if( ui.window(Id.handle(), 10, 10, 100, 300) ){
             if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
                 ui.text("World!");
             }
             ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
+
+            var ratios : Array<Float> = [0.5, 0.5];
+            ui.row(ratios);
             ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
             ui.text(Std.string(Display.primary.height)+' height');
+            ui.row(ratios);
             ui.text(Std.string(Display.primary.width)+' width');
             ui.text(Std.string(Display.primary.name)+' name');
+            ui.row(ratios);
             ui.text(Std.string(System.screenRotation)+' degree');
             ui.text(Std.string(System.windowHeight())+' height');
+            ui.row(ratios);
             ui.text(Std.string(System.windowWidth())+' width');
             ui.text(Std.string(ScreenCanvas.the.height)+' height');
             ui.text(Std.string(ScreenCanvas.the.width)+' width');
         }
 
-        if( ui.window(Id.handle(), 410, 110, 150, 100) ){
-            if(ui.check(Id.handle(), "Hello!")) {
-                ui.text("World!");
-            }
-            ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
-        }
         ui.end();
     }
 
