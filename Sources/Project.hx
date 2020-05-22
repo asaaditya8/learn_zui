@@ -20,44 +20,48 @@ import zui.*;
 import Length.Length;
 
 class Project {
-    public var ui: Zui;
-    
-    public function new(): Void {
-        setFullWindowCanvas();
-        var lengths = new Length();
-        var device = lengths.device_type();
-        var scaleFactor : Float;
-        switch device {
-            case Laptop: scaleFactor = 1.5;
-            case Tablet: scaleFactor = 3;
-            case Mobile: scaleFactor = 4;
-        }
-        ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
-    }
+	public var ui:Zui;
 
-	public function update(): Void {
+	var itemList = ["Item 1", "Item 2", "Item 3"];
+
+	public function new():Void {
+		setFullWindowCanvas();
+		var lengths = new Length();
+		var device = lengths.device_type();
+		var scaleFactor:Float;
+		switch device {
+			case Laptop:
+				scaleFactor = 1.5;
+			case Tablet:
+				scaleFactor = 3;
+			case Mobile:
+				scaleFactor = 4;
+		}
+		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
 	}
 
-	public function render(frames: Array<Framebuffer>): Void {
-        var graphics = frames[0].g2;
-        graphics.begin();
-        graphics.end();
-        gui(graphics);
-    }
-    
-    public function gui(graphics: Graphics) : Void {
-        ui.begin(graphics);
-        
-        if( ui.window(Id.handle(), 10, 10, System.windowWidth()-20, System.windowHeight()-20) ){
-        // if( ui.window(Id.handle(), 10, 10, 100, 300) ){
-            // if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
-            //     ui.text("World!");
-            // }
-            // ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
+	public function update():Void {}
 
-            // var ratios : Array<Float> = [0.5, 0.5];
-            // ui.row(ratios);
-            // ui.text(Std.string(Display.primary.pixelsPerInch)+'ppi');
+	public function render(frames:Array<Framebuffer>):Void {
+		var graphics = frames[0].g2;
+		graphics.begin();
+		graphics.end();
+		gui(graphics);
+	}
+
+	public function gui(graphics:Graphics):Void {
+		ui.begin(graphics);
+
+		// if (ui.window(Id.handle(), 10, 10, System.windowWidth() - 20, System.windowHeight() - 20)) {
+        if( ui.window(Id.handle(), 10, 10, 500, 600) ){
+			// if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
+			//     ui.text("World!");
+			// }
+			// ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
+
+			// var ratios : Array<Float> = [0.5, 0.5];
+			// ui.row(ratios);
+			// ui.text(Std.string(Display.primary.pixelsPerInch) + 'ppi');
             // ui.text(Std.string(Display.primary.height)+' height');
             // ui.row(ratios);
             // ui.text(Std.string(Display.primary.width)+' width');
@@ -69,44 +73,19 @@ class Project {
             // ui.text(Std.string(System.windowWidth())+' width');
             // ui.text(Std.string(ScreenCanvas.the.height)+' height');
             // ui.text(Std.string(ScreenCanvas.the.width)+' width');
-            var htab = Id.handle({position: 0});
-			if (ui.tab(htab, "Tab 1")) {
-				ui.button("A");
-				ui.button("B");
-				ui.button("C");
-			}
-			if (ui.tab(htab, "Tab 2")) {
-				ui.button("D");
-				ui.button("E");
-				ui.button("F");
-				ui.button("G");
-				ui.button("H");
-				ui.button("J");
-				ui.button("K");
-				ui.button("L");
-				ui.button("M");
-				ui.button("N");
-				ui.button("O");
-				ui.button("P");
-				ui.button("Q");
-				ui.button("R");
-				ui.button("S");
-			}
-			if (ui.tab(htab, "Another Tab")) {
-				ui.text("Lorem ipsum dolor sit amet");
-				ui.check(Id.handle(), "Check Box 1");
-				ui.check(Id.handle(), "Check Box 2");
-			}
-        }
+            if (ui.panel(Id.handle({selected: true}), "File Browser")) {
+                var h = Id.handle();
+                ui.text(h.text);
+                Ext.fileBrowser(ui, h);
+            }
+		}
 
-        ui.end();
-    }
+		ui.end();
+	}
 
-    
-
-    static function setFullWindowCanvas():Void {
+	static function setFullWindowCanvas():Void {
 		#if kha_html5
-		//make html5 canvas resizable
+		// make html5 canvas resizable
 		document.documentElement.style.padding = "0";
 		document.documentElement.style.margin = "0";
 		document.body.style.padding = "0";
@@ -123,5 +102,5 @@ class Project {
 		window.onresize = resize;
 		resize();
 		#end
-	}
+    }
 }
