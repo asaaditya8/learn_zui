@@ -1,5 +1,6 @@
 package;
 
+import kha.Sound;
 import haxe.Constraints.FlatEnum;
 import kha.ScreenCanvas;
 import kha.ScreenRotation;
@@ -14,6 +15,11 @@ import kha.Macros;
 import js.html.CanvasElement;
 import js.Browser.document;
 import js.Browser.window;
+#end
+
+#if kha_android
+import android.content.Intent;
+import tech.kode.kha.KhaActivity;
 #end
 
 import zui.*;
@@ -73,14 +79,30 @@ class Project {
             // ui.text(Std.string(System.windowWidth())+' width');
             // ui.text(Std.string(ScreenCanvas.the.height)+' height');
             // ui.text(Std.string(ScreenCanvas.the.width)+' width');
-            if (ui.panel(Id.handle({selected: true}), "File Browser")) {
-                var h = Id.handle();
-                ui.text(h.text);
-                Ext.fileBrowser(ui, h);
-            }
+            // if (ui.panel(Id.handle({selected: true}), "File Browser")) {
+            //     var h = Id.handle();
+            //     ui.text(h.text);
+            //     Ext.fileBrowser(ui, h);
+			// }
+			if(ui.button('Hit Alarm!')){
+				soundAlarm();
+			}
 		}
 
 		ui.end();
+	}
+
+	static function soundAlarm() {
+		#if kha_android
+		var hour: String = "12";
+		var minute: String = "29";
+		var intent = new Intent("android.intent.action.SET_ALARM");
+		intent.putExtra("android.intent.extra.alarm.HOUR", hour);
+		intent.putExtra( "android.intent.extra.alarm.MINUTES", minute);
+		// if(hour < 24 && minute < 60){
+		KhaActivity.the().startActivity(intent);
+        // }
+		#end
 	}
 
 	static function setFullWindowCanvas():Void {
