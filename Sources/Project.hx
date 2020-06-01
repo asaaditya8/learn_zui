@@ -18,6 +18,11 @@ import js.Browser.window;
 #end
 
 #if kha_android
+import java.lang.Exception;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.provider.AlarmClock;
 import android.content.Intent;
 import tech.kode.kha.KhaActivity;
 #end
@@ -27,6 +32,10 @@ import Length.Length;
 
 class Project {
 	public var ui:Zui;
+
+	#if kha_android
+	var CHANNEL_1_ID : String = "channel1";
+	#end
 
 	var itemList = ["Item 1", "Item 2", "Item 3"];
 
@@ -44,6 +53,8 @@ class Project {
 				scaleFactor = 4;
 		}
 		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
+
+		setup_channel();
 	}
 
 	public function update():Void {}
@@ -84,21 +95,50 @@ class Project {
             //     ui.text(h.text);
             //     Ext.fileBrowser(ui, h);
 			// }
-			if(ui.button('Hit Alarm!')){
-				soundAlarm();
+			if(ui.button('Hit Notifi!')){
+				ab_notify();
 			}
 		}
 
 		ui.end();
 	}
 
-	static function soundAlarm() {
+	public function setup_channel() : Void {
 		#if kha_android
-		var hour: String = "12";
-		var minute: String = "29";
-		var intent = new Intent("android.intent.action.SET_ALARM");
-		intent.putExtra("android.intent.extra.alarm.HOUR", hour);
-		intent.putExtra( "android.intent.extra.alarm.MINUTES", minute);
+		var channel1: NotificationChannel = new NotificationChannel(
+			CHANNEL_1_ID, "Channel 1", NotificationManager.IMPORTANCE_HIGH);
+		channel1.setDescription("This is Channel 1 for x notification.");
+
+		var manager = cast(KhaActivity.the().getSystemService("notification"), NotificationManager);
+		try {
+			manager.createNotificationChannel(channel1);
+		} catch (e: Exception) {
+			trace("Some error occured in creating notification" + e.toString());
+		}
+		#end
+	}
+
+	public function ab_notify() : Void {
+		#if kha_android
+		var manager = cast(KhaActivity.the().getSystemService("notification"), NotificationManager);
+		
+		var title : String = "Hey Man!";
+		var text : String = "Have you finished your task?";
+		var priority = NotificationManager.IMPORTANCE_HIGH;
+		var category = Notification.CATEGORY_MESSAGE; 
+
+		untyped __java__("android.app.Notification notification = new android.app.Notification.Builder(((android.content.Context) (tech.kode.kha.KhaActivity.the().getApplicationContext()) ), haxe.lang.Runtime.toString(this.CHANNEL_1_ID)).setSmallIcon(android.R.drawable.ic_dialog_dialer).setContentTitle(title).setContentText(text).setPriority(priority).setCategory(category).build();");
+		untyped __java__("manager.notify(((int) (1) ), ((android.app.Notification) (notification) ));");
+		#end
+	}
+
+	static function soundAlarm() : Void {
+		#if kha_android
+		var hour: String = "20";
+		var minute: String = "26";
+		var intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+		intent.putExtra(AlarmClock.EXTRA_HOUR, hour);
+		intent.putExtra( AlarmClock.EXTRA_MINUTES, minute);
 		// if(hour < 24 && minute < 60){
 		KhaActivity.the().startActivity(intent);
         // }
