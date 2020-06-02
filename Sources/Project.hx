@@ -20,6 +20,7 @@ import js.Browser.window;
 #if kha_android
 import droid.CalendarContract;
 
+import java.NativeArray;
 import java.lang.Integer;
 import java.lang.Exception;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.provider.AlarmClock;
 import android.net.Uri;
 
@@ -44,6 +46,7 @@ class Project {
 
 	#if kha_android
 	var CHANNEL_1_ID : String = "channel1";
+	var cursor : Cursor;
 	#end
 
 	var itemList = ["Item 1", "Item 2", "Item 3"];
@@ -85,32 +88,46 @@ class Project {
 			// }
 			// ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
 
-			// var ratios : Array<Float> = [0.5, 0.5];
-			// ui.row(ratios);
-			// ui.text(Std.string(Display.primary.pixelsPerInch) + 'ppi');
-            // ui.text(Std.string(Display.primary.height)+' height');
-            // ui.row(ratios);
-            // ui.text(Std.string(Display.primary.width)+' width');
-            // ui.text(Std.string(Display.primary.name)+' name');
-            // ui.row(ratios);
-            // ui.text(Std.string(System.screenRotation)+' degree');
-            // ui.text(Std.string(System.windowHeight())+' height');
-            // ui.row(ratios);
-            // ui.text(Std.string(System.windowWidth())+' width');
-            // ui.text(Std.string(ScreenCanvas.the.height)+' height');
-            // ui.text(Std.string(ScreenCanvas.the.width)+' width');
-            // if (ui.panel(Id.handle({selected: true}), "File Browser")) {
-            //     var h = Id.handle();
-            //     ui.text(h.text);
-            //     Ext.fileBrowser(ui, h);
-			// }
-			if(ui.button('Hit Notifi!')){
-				addEventToCal();
+			if(ui.button('See Notifications!')){
+				seeEvents();
 			}
 		}
 
 		ui.end();
 	}
+
+	public function seeEvents() : Void {
+		#if kha_android
+        try{
+			var selectionClause: String = CalendarContract._ID + " > ?";
+			var selectionArgs: NativeArray<String> = new NativeArray<String>(1);
+
+			selectionArgs[0] = Std.string(1043);
+
+			cursor = KhaActivity.the().getApplicationContext().getContentResolver().query(CalendarContract.CONTENT_URI,
+					null, selectionClause, selectionArgs, null);
+			while(cursor.moveToNext()){
+				if(cursor != null){
+					var id_1: Int = cursor.getColumnIndex(CalendarContract._ID);
+					var id_2: Int = cursor.getColumnIndex(CalendarContract.TITLE);
+					var id_3: Int = cursor.getColumnIndex(CalendarContract.DESCRIPTION);
+					// var id_4: Int = cursor.getColumnIndex(CalendarContract.DTSTART);
+
+					var idValue: String = cursor.getString(id_1);
+					var titleValue: String = cursor.getString(id_2);
+					var dscptValue: String = cursor.getString(id_3);
+
+					trace(idValue + ", " + titleValue + ", " + dscptValue);
+	            	// Toast.makeText(this, idValue + ", " + titleValue + ", " + dscptValue, Toast.LENGTH_SHORT).show();
+
+				}
+			}	
+		}
+		catch(e: Exception){
+			trace("Error Reading: " + e.toString());
+		}
+		#end
+    }
 
 	public function addEventToCal() : Void {
 		#if kha_android
@@ -127,8 +144,8 @@ class Project {
         cv.put(CalendarContract.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
 
 		try{
-			trace("Say Hi");
 			var uri : Uri = cr.insert(CalendarContract.CONTENT_URI, cv);
+			trace(uri.toString());
 		}
 		catch(e: Exception){
 			trace("Could not add Event to Calender." + e.toString());

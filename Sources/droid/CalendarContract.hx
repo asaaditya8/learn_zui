@@ -76,4 +76,6 @@ class CalendarContract {
 	public static var CUSTOM_APP_PACKAGE: String = "customAppPackage";
 	public static var CUSTOM_APP_URI: String = "customAppUri";
 	public static var UID_2445: String = "uid2445";
+
+	public static var _ID : String = "_id";
 }
