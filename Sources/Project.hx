@@ -18,12 +18,21 @@ import js.Browser.window;
 #end
 
 #if kha_android
+import droid.CalendarContract;
+
+import java.lang.Integer;
 import java.lang.Exception;
+import java.util.Calendar;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.provider.AlarmClock;
 import android.content.Intent;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.provider.AlarmClock;
+import android.net.Uri;
+
 import tech.kode.kha.KhaActivity;
 #end
 
@@ -96,12 +105,37 @@ class Project {
             //     Ext.fileBrowser(ui, h);
 			// }
 			if(ui.button('Hit Notifi!')){
-				ab_notify();
+				addEventToCal();
 			}
 		}
 
 		ui.end();
 	}
+
+	public function addEventToCal() : Void {
+		#if kha_android
+        var cr: ContentResolver =  KhaActivity.the().getApplicationContext().getContentResolver();
+		var cv: ContentValues = new ContentValues();
+		
+		var c_id: Integer = 1;
+
+        cv.put("title", "Just Do It");
+        cv.put("description", "First task from app.");
+        cv.put(CalendarContract.DTSTART, Calendar.getInstance().getTimeInMillis());
+        cv.put(CalendarContract.DTEND, Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000);
+        cv.put(CalendarContract.CALENDAR_ID, c_id);
+        cv.put(CalendarContract.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
+
+		try{
+			trace("Say Hi");
+			var uri : Uri = cr.insert(CalendarContract.CONTENT_URI, cv);
+		}
+		catch(e: Exception){
+			trace("Could not add Event to Calender." + e.toString());
+		    return;
+		}
+		#end
+    }
 
 	public function setup_channel() : Void {
 		#if kha_android
