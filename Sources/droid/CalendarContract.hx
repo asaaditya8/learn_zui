@@ -1,8 +1,7 @@
 package droid;
 
-#if kha_android
 import android.net.Uri;
-#end
+
 
 class CalendarContract {
 	private static var TAG: String = "Calendar";
