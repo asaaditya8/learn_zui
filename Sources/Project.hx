@@ -32,15 +32,6 @@ class Project {
 
 	// var LeCalendar : CalendarService;
 
-	var itemList = ["Item 1", "Item 2", "Item 3"];
-
-	var page : Int;
-	var go_back : Bool;
-	var show_more : Bool;
-	var sequence : Array<TlineSeg>;
-	var event_start : Float;
-	var event_end : Float;
-
 	public function new():Void {
 		setFullWindowCanvas();
 		var lengths = new Length();
@@ -57,8 +48,6 @@ class Project {
 		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
 
 		// LeCalendar = new CalendarService();
-		page = 1;
-		show_more = false;
 		sequence = new Array<TlineSeg>();
 
 		onStart();
