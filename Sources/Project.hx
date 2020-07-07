@@ -48,8 +48,6 @@ class Project {
 		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
 
 		// LeCalendar = new CalendarService();
-		sequence = new Array<TlineSeg>();
-
 		onStart();
 	}
 
