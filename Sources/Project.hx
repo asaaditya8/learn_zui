@@ -1,10 +1,7 @@
 package;
 
-import droid.CalendarContract;
-import droid.AlarmService;
-import droid.NotificationService;
-import droid.CalendarService;
-
+import zui.MyExt.TlineSeg;
+import zui.Zui.Align;
 import kha.Sound;
 import haxe.Constraints.FlatEnum;
 import kha.ScreenCanvas;
@@ -16,6 +13,7 @@ import kha.Assets;
 import kha.Framebuffer;
 import kha.graphics2.Graphics;
 
+
 #if kha_html5
 import kha.Macros;
 import js.html.CanvasElement;
@@ -24,15 +22,24 @@ import js.Browser.window;
 #end
 
 import zui.*;
+import dashboard.Presenter in DashPresenter;
 import Length.Length;
 
 class Project {
 	public var ui:Zui;
+    var myView : View;
+    var dashboard : DashPresenter;
 
-	var Notifier : NotificationService;
-	var LeCalendar : CalendarService;
+	// var LeCalendar : CalendarService;
 
 	var itemList = ["Item 1", "Item 2", "Item 3"];
+
+	var page : Int;
+	var go_back : Bool;
+	var show_more : Bool;
+	var sequence : Array<TlineSeg>;
+	var event_start : Float;
+	var event_end : Float;
 
 	public function new():Void {
 		setFullWindowCanvas();
@@ -49,9 +56,12 @@ class Project {
 		}
 		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
 
-		
-		Notifier = new NotificationService();
-		LeCalendar = new CalendarService();
+		// LeCalendar = new CalendarService();
+		page = 1;
+		show_more = false;
+		sequence = new Array<TlineSeg>();
+
+		onStart();
 	}
 
 	public function update():Void {}
@@ -60,42 +70,45 @@ class Project {
 		var graphics = frames[0].g2;
 		graphics.begin();
 		graphics.end();
-		gui(graphics);
-	}
-
-	public function gui(graphics:Graphics):Void {
-		ui.begin(graphics);
-
-		if (ui.window(Id.handle(), 10, 10, System.windowWidth() - 20, System.windowHeight() - 20)) {
-        // if( ui.window(Id.handle(), 10, 10, 500, 600) ){
-			// if(ui.check(Id.handle(), "Hi, Click me to say Hello!")) {
-			//     ui.text("World!");
-			// }
-			// ui.slider(Id.handle(), 'Volume', 0, 300, false, 1);
-
-			if(ui.button('Set Alarm!')){
-				AlarmService.soundAlarm();
-			}
-			if(ui.button('Hit Notifi!')){
-				Notifier.ab_notify();
-			}
-
-			if(ui.button('See Events!')){
-				LeCalendar.seeEvents();
-			}
-			if(ui.button('Add Eventa!')){
-				LeCalendar.addEventToCal();
-			}
-			if(ui.button('Renovate Eventa!')){
-				LeCalendar.updateEventInCal();
-			}
-			if(ui.button('Destroy Eventa!')){
-				LeCalendar.deleteEventfromCal();
-			}
+		
+		if(myView != null){
+            myView.render(ui, graphics);
 		}
-
-		ui.end();
+		
+		if(dashboard != null){
+			dashboard.render(ui, graphics);
+		}
 	}
+
+	public function onStart() {
+        attachMyView();
+    }
+
+    public function attachMyView() {
+        myView = new View(openDashboard);
+    }
+
+    public function detachMyView() {
+        myView = null;
+    }
+
+    public function attachDashboard() {
+        dashboard = new DashPresenter(closeDashboard);
+    }
+
+    public function detachDashboard() {
+        dashboard = null;
+    }
+
+    public function openDashboard() {
+        detachMyView();
+        attachDashboard();
+    }
+
+    public function closeDashboard() {
+        detachDashboard();
+        attachMyView();
+    }
 
 	static function setFullWindowCanvas():Void {
 		#if kha_html5

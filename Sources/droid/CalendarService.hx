@@ -1,8 +1,9 @@
 package droid;
 
+import haxe.Int64;
+
 #if kha_android
 import java.NativeArray;
-import java.lang.Integer;
 import java.lang.Exception;
 import java.util.Calendar;
 
@@ -36,7 +37,7 @@ class CalendarService {
 					var id_1: Int = cursor.getColumnIndex(CalendarContract._ID);
 					var id_2: Int = cursor.getColumnIndex(CalendarContract.TITLE);
 					var id_3: Int = cursor.getColumnIndex(CalendarContract.DESCRIPTION);
-					// var id_4: Int = cursor.getColumnIndex(CalendarContract.DTSTART);
+					// var id_4: Int64 = cursor.getColumnIndex(CalendarContract.DTSTART);
 
 					var idValue: String = cursor.getString(id_1);
 					var titleValue: String = cursor.getString(id_2);
@@ -59,7 +60,7 @@ class CalendarService {
         var cr: ContentResolver =  KhaActivity.the().getApplicationContext().getContentResolver();
 		var cv: ContentValues = new ContentValues();
 		
-		var c_id: Integer = 1;
+		var c_id: Int = 1;
 
         cv.put(CalendarContract.TITLE, "Just Do It");
 		cv.put(CalendarContract.DESCRIPTION, "First task from app.");
