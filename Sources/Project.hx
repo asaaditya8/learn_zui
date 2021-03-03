@@ -1,6 +1,6 @@
 package;
 
-import zui.MyExt.TlineSeg;
+import MyExt.TlineSeg;
 import zui.Zui.Align;
 import kha.Sound;
 import haxe.Constraints.FlatEnum;
