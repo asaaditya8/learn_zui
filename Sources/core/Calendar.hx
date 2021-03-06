@@ -3,9 +3,11 @@ package core;
 enum abstract IType(Int) {
     var EVENT = 0;
     var TASK = 1;
-    var HABIT = 2;
-    var DAG = 3;
-    var JOB = 4;
+    var O_TASK = 2;
+    var HABIT = 3;
+    var O_HABIT = 4;
+    var DAG = 5;
+    var JOB = 6;
 }
 
 class Item {
@@ -26,7 +28,9 @@ class Item {
 
 class Calendar {
     var tasks : Array<Task>;
+    var overlapping_tasks : Array<Task>;
     var habits : Array<Habit>;
+    var overlapping_habits : Array<Habit>;
     var dags : Array<Dag>;
     var jobs : Array<Job>;
     var events : Array<Event>;
@@ -112,6 +116,14 @@ class Calendar {
             items.push(new Item(i, habits[i].start, habits[i].duration, HABIT));
         }
 
+        for (i => task in overlapping_tasks){
+            items.push(new Item(i, task.start, task.duration, O_TASK));
+        }
+
+        for (i => habit in overlapping_habits){
+            items.push(new Item(i, habit.start, habit.duration, O_HABIT));
+        }
+
         //TODO : DAGS need to calculate upcoming
         // TODO : use ArraySort
 
@@ -161,17 +173,16 @@ class Calendar {
     }
 
     public function find_and_set_order() : Void {
-        var task_id = 0;
-        var habit_id = 0;
+        var order = 0;
 
         for (item in items){
             switch item.type {
                 case TASK:
-                    tasks[item.idx].order = task_id;
-                    task_id += 1;
+                    tasks[item.idx].order = order;
+                    order += 1;
                 case HABIT:
-                    habits[item.idx].order = habit_id;
-                    habit_id += 1;
+                    habits[item.idx].order = order;
+                    order += 1;
                 case _:
             }
         }
@@ -184,6 +195,35 @@ class Calendar {
             populate again.
             check for overlaps.
         */
-        
+        items.resize(0);
+        tasks.sort((a, b) -> a.order - b.order);
+        habits.sort((a, b) -> a.order - b.order);
+
+        var i = 0;
+        var j = 0;
+        while( i < tasks.length && j < habits.length ){
+            if(tasks[i].order < habits[j].order){
+                items.push(new Item(i, 0, tasks[i].duration, TASK));
+                i++;
+            }else{
+                items.push(new Item(j, 0, habits[j].duration, HABIT));
+                j++;
+            }
+        }
+
+        while( i < tasks.length ){ items.push(new Item(i, 0, tasks[i].duration, TASK)); }
+        while( j < habits.length ){ items.push(new Item(j, 0, habits[j].duration, HABIT)); }
+
+        for (item in items){
+            item.start = input_time;
+            switch item.type {
+                case TASK:
+                    tasks[item.idx].start = input_time;
+                case HABIT:
+                    habits[item.idx].start = input_time;
+                case _:
+            }
+            input_time += item.duration;
+        }
     }
 }
