@@ -5,6 +5,32 @@ import kha.Color;
 
 @:access(zui.Zui)
 class MyExt {
+    public static function toast(ui: Zui, text: String) {
+        var x = ui._x + ui.buttonOffsetY;
+		var y = ui._h - ui.BUTTON_H() - ui.buttonOffsetY;
+		var w = ui._w - ui.buttonOffsetY * 2;
+
+        ui.g.color = ui.t.ACCENT_COL;
+        ui.drawRect(ui.g, ui.t.FILL_BUTTON_BG, x, y, w, ui.BUTTON_H());
+        
+        var fullLength = text.length;
+		while (text.length > 0 && ui.ops.font.width(ui.fontSize, text) > w - 6) {
+            text = text.substr(0, text.length - 1);
+		}
+		if (text.length < fullLength) text += "..";
+        
+        var xOffset : Float = ui.t.TEXT_OFFSET;
+		xOffset *= ui.SCALE();
+        xOffset = w / 2 - ui.ops.font.width(ui.fontSize, text) / 2;
+
+        ui.g.font = ui.ops.font;
+        ui.g.fontSize = ui.fontSize;
+		ui.g.color = ui.t.TEXT_COL;
+		ui.g.pipeline = ui.rtTextPipeline;
+        ui.g.drawString(text, x + xOffset, y + ui.fontOffsetY);
+		ui.g.pipeline = null;
+    }
+
     public static function timeline(ui: Zui, from: Float, to: Float, divisions: Int, partitions: Array<TlineSeg>) {
 		if (!ui.isVisible(ui.ELEMENT_H())) { ui.endElement(); }
 		// if (ui.getReleased()) {
@@ -24,6 +50,7 @@ class MyExt {
         var x = ui._x + ui.buttonOffsetY;
 		var y = ui._y + ui.buttonOffsetY;
 		var w = ui._w - ui.buttonOffsetY * 2;
+
 
         ui.g.color = hover ? ui.t.ACCENT_HOVER_COL : ui.t.ACCENT_COL;
 		if (!hover) if (!ui.enabled) ui.fadeColor();
@@ -88,12 +115,12 @@ class MyExt {
         return kha.Color.fromBytes(r, g, b, color.Ab);
     }
 
-    public static function limitedIntInput(ui: Zui, handle: Handle, label = "", limit:Int, align: Align = Left): Float {
+    public static function limitedIntInput(ui: Zui, handle: Handle, label = "", limit:Int, align: Align = Left): Int {
 		handle.text = Std.string(handle.value);
         var text = ui.textInput(handle, label, align);
         var parsed = Std.parseInt(text.substr(0, limit));
 		handle.value = parsed != null ? parsed : 0;
-		return handle.value;
+		return Std.int(handle.value);
 	}
 }
 
