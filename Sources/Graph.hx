@@ -3,7 +3,7 @@ class Graph {
         var nNode : Int = graph.length;
 
         var inDegree : Array<Int> = [for (i in 0...nNode) 0];
-        var zeroInd : List<Int>;
+        var zeroInd : List<Int> = new List<Int>();
     
         // topsort
         for(src in 0...nNode){
