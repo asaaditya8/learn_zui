@@ -1,5 +1,7 @@
 package dashboard;
 
+import zui.Zui.Align;
+import core.Calendar;
 import kha.graphics2.Graphics;
 import kha.System;
 
@@ -9,27 +11,43 @@ import zui.*;
 class View {
     var sequenceCreationListener : Void -> Void = null;
 	var backListener : Void -> Void = null;
+	var r = 3;
+	var ratio : Array<Float>;
 	
 
     public function new(SequenceCreationListener : Void -> Void, BackListener : Void -> Void) : Void{
         this.sequenceCreationListener = SequenceCreationListener;
 		this.backListener = BackListener;
+		ratio = [for (i in 0...r) 1/r];
     }
 
-    public function render(ui: Zui, graphics:Graphics) : Void {
+	public function update(): Void {
+		
+	}
+
+    public function render(ui: Zui, graphics:Graphics, data: Calendar) : Void {
 		ui.begin(graphics);
 
 		if (ui.window(Id.handle(), 10, 10, System.windowWidth() - 20, System.windowHeight() - 20)) {
         // if( ui.window(Id.handle(), 10, 10, 500, 600) ){
 			if (ui.panel(Id.handle({selected: true}), "Dashboard")) {
-				for(i in 1...4){
-					ui.text('Seq' + Std.string(i));
-					var ratios : Array<Float> = [1/3, 1/3, 1/3];
-					ui.row(ratios);
-					ui.text('Event 1');
-					ui.text('Event 2');
-					ui.text('Event 3');
+				ui.text('Tasks');
+				var i = 0;
+				while(i + r < data.tasks_q.length){
+					ui.row(ratio);
+					for(j in 0...r){
+						ui.text(data.tasks[data.tasks_q.get(i+j)].title, Align.Center);
+					}
+					i += r;
 				}
+				ui.row(ratio);
+				for(j in i...data.tasks_q.length){
+					ui.text(data.tasks[data.tasks_q.get(j)].title, Align.Center);
+				}
+				for(j in data.tasks_q.length...(i+r)){
+					ui.text("", Align.Center);
+				}
+
 			}
 	
 			if(ui.panel(Id.handle({selected: true}), "Actions")){

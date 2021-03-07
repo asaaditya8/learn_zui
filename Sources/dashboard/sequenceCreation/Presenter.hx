@@ -1,5 +1,6 @@
 package dashboard.sequenceCreation;
 
+import core.Calendar;
 import kha.graphics2.Graphics;
 import zui.*;
 
@@ -14,9 +15,15 @@ class Presenter {
         onStart();
     }
 
-    public function render(ui: Zui, graphics:Graphics) : Void {
+    public function update():Void {
+		if(myView != null){
+            myView.update();
+		}
+	}
+
+    public function render(ui: Zui, graphics:Graphics, data: Calendar) : Void {
         if(myView != null){
-            myView.render(ui, graphics);
+            myView.render(ui, graphics, data);
         }
     }
 

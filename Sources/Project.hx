@@ -1,5 +1,6 @@
 package;
 
+import core.Calendar;
 import MyExt.TlineSeg;
 import zui.Zui.Align;
 import kha.Sound;
@@ -29,6 +30,7 @@ class Project {
 	public var ui:Zui;
     var myView : View;
     var dashboard : DashPresenter;
+	var data : Calendar;
 
 	// var LeCalendar : CalendarService;
 
@@ -46,12 +48,21 @@ class Project {
 				scaleFactor = 4;
 		}
 		ui = new Zui({font: Assets.fonts.Abel_Regular, scaleFactor: scaleFactor});
+		data = new Calendar();
 
 		// LeCalendar = new CalendarService();
 		onStart();
 	}
 
-	public function update():Void {}
+	public function update():Void {
+		if(myView != null){
+            myView.update();
+		}
+		
+		if(dashboard != null){
+			dashboard.update();
+		}
+	}
 
 	public function render(frames:Array<Framebuffer>):Void {
 		var graphics = frames[0].g2;
@@ -59,11 +70,11 @@ class Project {
 		graphics.end();
 		
 		if(myView != null){
-            myView.render(ui, graphics);
+            myView.render(ui, graphics, data);
 		}
 		
 		if(dashboard != null){
-			dashboard.render(ui, graphics);
+			dashboard.render(ui, graphics, data);
 		}
 	}
 

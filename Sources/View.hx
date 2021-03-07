@@ -1,5 +1,6 @@
 package;
 
+import core.Calendar;
 import kha.graphics2.Graphics;
 import kha.System;
 
@@ -15,7 +16,34 @@ class View {
 		show_more = false;
     }
 
-    public function render(ui: Zui, graphics: Graphics) : Void {
+	public function update(): Void {
+		
+	}
+
+	function event_row(ui: Zui, data: Calendar, ratios: Array<Float>, title: String) {
+		ui.separator();
+		ui.row(ratios);
+		ui.text(title);
+		if(ui.button('>')){
+			data.tasks_q.enqueue(data.tasks_q.dequeue());
+		}
+		ui.button('+');
+		ui.combo(Id.handle(), ['5', '10', '30'], null, false, Center);
+		if(ui.button('\\/')){
+			show_more = !show_more;
+		}
+		if(show_more){
+			ui.indent();
+			ui.row([4/5, 1/5]);
+			ui.slider(Id.handle(), 'Progress', 0, 100, true, 1);
+			if(ui.button('+')){
+				show_more = !show_more;
+			}
+			ui.unindent();
+		}
+	}
+
+    public function render(ui: Zui, graphics: Graphics, data: Calendar) : Void {
 		ui.begin(graphics);
 
 		if (ui.window(Id.handle(), 10, 10, System.windowWidth() - 20, System.windowHeight() - 20)) {
@@ -29,30 +57,9 @@ class View {
 				ui.text('Add', Right);
 				ui.text("Time", Left);
 				ui.text("", Center);
-				ui.separator();
-				ui.row(ratios);
-				ui.text('Water');
-				ui.button('>');
-				ui.button('+');
-				ui.combo(Id.handle(), ['5', '10', '30'], null, false, Center);
-				if(ui.button('\\/')){
-					show_more = !show_more;
+				if(data.tasks.length > 0){
+					event_row(ui, data, ratios, data.tasks[data.tasks_q.get(0)].title);
 				}
-				if(show_more){
-					ui.indent();
-					ui.row([4/5, 1/5]);
-					ui.slider(Id.handle(), 'Progress', 0, 100, true, 1);
-					if(ui.button('+')){
-						show_more = !show_more;
-					}
-					ui.unindent();
-				}
-				ui.row(ratios);
-				ui.text('Sleep');
-				ui.button('>');
-				ui.button('+');
-				ui.combo(Id.handle(), ['5', '10', '30'], null, false, Center);
-				ui.button('\\/');
 			}
 	
 			if(ui.panel(Id.handle({selected: true}), "Actions")){
