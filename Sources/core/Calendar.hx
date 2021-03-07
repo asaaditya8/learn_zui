@@ -9,7 +9,6 @@ enum abstract IType(Int) {
     var DAG = 5;
     var JOB = 6;
 }
-
 class Item {
     public var idx : Int;
     public var start : Int;
@@ -27,18 +26,34 @@ class Item {
 }
 
 class Calendar {
-    var tasks : Array<Task>;
-    var overlapping_tasks : Array<Task>;
-    var habits : Array<Habit>;
-    var overlapping_habits : Array<Habit>;
-    var dags : Array<Dag>;
-    var jobs : Array<Job>;
-    var events : Array<Event>;
-    var items : Array<Item>;
-    var starts : Array<Int>;
-    var durations : Array<Int>;
+    public var tasks : Array<Task>;
+    public var tasks_q : Queue<Int>;
+    public var overlapping_tasks : Array<Task>;
+    public var habits : Array<Habit>;
+    public var overlapping_habits : Array<Habit>;
+    public var dags : Array<Dag>;
+    public var jobs : Array<Job>;
+    public var events : Array<Event>;
+    public var items : Array<Item>;
+    public var overlapping_items : Array<Item>;
+    // public var starts : Array<Int>;
+    // public var durations : Array<Int>;
 
-    public function binary_search(my_list : Array<Int>, key : Int) : Array<Int> {
+    public function new() {
+        tasks = [];
+        tasks_q = new Queue<Int>();
+        overlapping_tasks = [];
+        habits = [];
+        overlapping_habits = [];
+        dags = [];
+        jobs = [];
+        events = [];
+        items = [];
+        // starts = [];
+        // durations = [];
+    }
+
+    public function binary_search(my_list : Array<Item>, key : Int) : Array<Int> {
         var large : Int = my_list.length -1;
         var small : Int = 0;
         var mid = (small + large) >> 1;
@@ -46,10 +61,10 @@ class Calendar {
         while (small <= large){
             mid = (small + large) >> 1 ;
             // trace( small, mid, large, " - ", my_list[mid], "~", key );
-            if (my_list[mid] < key){
+            if (my_list[mid].start < key){
                 small = mid + 1;
             }
-            else if (my_list[mid] > key){
+            else if (my_list[mid].start > key){
                 large = mid - 1;
             }
             else{
@@ -57,39 +72,35 @@ class Calendar {
             }
         }
 
-        var value = my_list[mid];
+        var value = my_list[mid].start;
         var lower = value < key ? mid : mid-1;
         var upper = value > key ? mid : mid+1;
         return [lower, upper];
     }
 
-    public function binary_insert(start : Int, duration : Int){
-        if ( this.starts.length > 0 ){
-            var pos = binary_search(this.starts, start);
-            if (pos[1] == -1) { throw "Can't insert"; }
+    public function binary_insert(item: Item){
+        if ( items.length > 0 ){
+            var pos = binary_search(items, item.start);
+            if (pos[1] == -1) { throw "Can't insert 0"; }
             // left, right = pos;
             
             if (pos[0] < 0){
-                if (start + duration <= this.starts[pos[1]]) { throw "Can't insert";}
-                this.starts.unshift(start);
-                this.durations.unshift(duration);
+                if (item.start + item.duration > items[pos[1]].start) { throw "Can't insert 1";}
+                items.unshift(item);
             }
-            else if (pos[1] >= this.starts.length){
-                if(start >= this.starts[pos[0]] + this.durations[pos[0]]){ throw "Can't insert";}
-                this.starts.push(start);
-                this.durations.push(duration);
+            else if (pos[1] >= items.length){
+                if(item.start < items[pos[0]].start + items[pos[0]].duration){ throw "Can't insert 2";}
+                items.push(item);
             }
             else{
-                if(start >= this.starts[pos[0]] + this.durations[pos[0]]){ throw "Can't insert";}
-                if(start + duration <= this.starts[pos[1]]){ throw "Can't insert";}
+                if(item.start < items[pos[0]].start + items[pos[0]].duration){ throw "Can't insert 3";}
+                if(item.start + item.duration > items[pos[1]].start){ throw "Can't insert 4";}
                 
-                this.starts.insert(pos[0] + 1, start);
-                this.durations.insert(pos[0] + 1, duration);
+                items.insert(pos[0] + 1, item);
             }
         }
         else{
-            this.starts.push(start);
-            this.durations.push(duration);
+            items.push(item);
         }
     }
 
