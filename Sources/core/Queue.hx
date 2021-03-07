@@ -64,12 +64,12 @@ class Queue<T> {
     }
 
     @:op([]) public inline function get(index:Int):T {
-        if(index < 0 || index >= length){ throw "index out of bounds."}
+        if(index < 0 || index >= length){ throw 'index $index out of bounds.';}
 		return arr[(index + front) % arr.length];
 	}
 
     @:op([]) public inline function set(index:Int, val:T):T {
-        if(index < 0 || index >= length){ throw "index out of bounds."}
+        if(index < 0 || index >= length){ throw 'index $index out of bounds.';}
 		return arr[(index + front) % arr.length] = val;
 	}
 
