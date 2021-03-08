@@ -26,6 +26,14 @@ class View {
 		ui.text(title);
 		if(ui.button('>')){
 			data.tasks_q.enqueue(data.tasks_q.dequeue());
+			// var today = Date.now();
+			// data.tasks[data.tasks_q.get(i)].start = today.getHours() * 60 + today.getMinutes();
+			data.tasks[data.tasks_q.get(0)].start = 0;
+			for(i in 1...data.tasks_q.length){
+				var k = data.tasks_q.get(i);
+				var j = data.tasks_q.get(i-1);
+				data.tasks[k].start = data.tasks[j].start + data.tasks[j].duration + data.tasks[j].gap;
+			}
 		}
 		ui.button('+');
 		ui.combo(Id.handle(), ['5', '10', '30'], null, false, Center);

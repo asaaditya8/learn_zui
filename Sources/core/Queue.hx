@@ -87,10 +87,12 @@ class Queue<T> {
         }
 		arr.insert(pos, x);
         rear++;
+        length++;
 	}
 
     public inline function resize(len:Int):Void {
-        arr.resize(Math.floor(Math.max(len, Math.max(front+1, rear+1))));
+        var t = front > rear ? front : rear; t++;
+        arr.resize(len > t ? len : t);
     }
 
     public inline function toString():String {

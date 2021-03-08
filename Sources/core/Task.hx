@@ -13,6 +13,7 @@ class Task {
     public var r : Null<Int>;
     public var g : Null<Int>;
     public var b : Null<Int>;
+    public var gap : Int = 0;
 
     // shiftable
     public function new(start, duration, title, overlaps, finished=false, ?r, ?g, ?b) {

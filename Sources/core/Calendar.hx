@@ -53,7 +53,7 @@ class Calendar {
         // durations = [];
     }
 
-    public function binary_search(my_list : Array<Item>, key : Int) : Array<Int> {
+    static public function binary_search(my_list : Array<Item>, key : Int) : Array<Int> {
         var large : Int = my_list.length -1;
         var small : Int = 0;
         var mid = (small + large) >> 1;
@@ -102,6 +102,39 @@ class Calendar {
         else{
             items.push(item);
         }
+    }
+
+    public function smallest_sub_of_sum(q: Queue<Int>, x: Int) : Array<Int> {
+        // TODO: this works only for tasks
+        for(i in 0...(q.length-1)){
+            var j = q.get(i);
+            var k = q.get(i+1);
+            tasks[j].gap = tasks[k].start - tasks[j].start - tasks[j].duration;
+        }
+        
+        var sum = 0;
+        var min_size = q.length;
+        var result = [-1, -1];
+ 
+        var begin = 0;
+        var end = 0;
+        while (end < (q.length-1)) {
+            while (sum < x && end < (q.length-1)){
+                sum += tasks[q.get(end)].gap;
+                end++;
+            }
+ 
+            while (sum >= x && begin < (q.length-1)) {
+                if (end - begin < min_size){
+                    min_size = end - begin;
+                    result[0] = begin; result[1] = end;
+                }
+                sum -= tasks[q.get(begin)].gap;
+                begin++;
+            }
+        }
+
+        return result;
     }
 
     public function populate() : Void {
