@@ -37,16 +37,17 @@ class View {
 
     public function render(ui: Zui, graphics:Graphics, data: Calendar) : Void {
 		if(display_sequence.length == 0){
-			for(task in data.tasks){
-				display_sequence.push({from: task.start/60, to: (task.start+task.duration)/60, color: kha.Color.fromBytes(task.r, task.g, task.b)});
+			for(i in 0...data.tasks.length){
+				display_sequence.push({from: data.tasks.get_start(i)/60,
+					 to: (data.tasks.get_start(i)+data.tasks.get_duration(i))/60,
+					  color: kha.Color.fromBytes(data.tasks.get_r(i), data.tasks.get_g(i), data.tasks.get_b(i))});
 			}
 			
-			data.items.resize(0);
-			for(i in 0...data.tasks_q.length){
-				var j = data.tasks_q.get(i);
-				data.items.push(new Item(j, data.tasks[j].start, data.tasks[j].duration, TASK));
-				trace(data.tasks[j].start/60, data.tasks[j].duration/60);
-			}
+			// data.items.resize(0);
+			// for(i in 0...data.tasks.length){
+			// 	data.items.push(new Item(data.tasks.q.get(i), data.tasks.get_start(i), data.tasks.get_duration(i), TASK));
+			// 	trace(data.tasks.get_start(i)/60, data.tasks.get_duration(i)/60);
+			// }
 		}
         ui.begin(graphics);
 
@@ -71,9 +72,9 @@ class View {
 					var g = 50 + Std.random(121);
 					var b = 50 + Std.random(151);
 					try {
-						var item = new Item(data.tasks.length, event_start, event_end - event_start, TASK);
-						data.binary_insert(item);
-						data.tasks.push(new Task(event_start, event_end - event_start, title, false, r, g, b));
+						// var item = new Item(data.tasks.starts.length, event_start, event_end - event_start, TASK);
+						data.binary_insert(event_start, event_end - event_start);
+						data.tasks.push(event_start, event_end - event_start, title, false, r, g, b);
 						display_sequence.push({from: event_start/60.0, to: event_end/60.0, color: kha.Color.fromBytes(r, g, b)});
 					} catch(e) {
 						put_toast(e.toString());
@@ -90,8 +91,8 @@ class View {
 					var r = 50 + Std.random(141);
 					var g = 50 + Std.random(121);
 					var b = 50 + Std.random(151);
-					var pos = data.smallest_sub_of_sum(data.tasks_q, event_duration);
-					trace('pos', pos);
+					var pos = data.smallest_sub_of_sum(event_duration);
+					// trace('pos', pos);
 					if(pos[0] == -1){
 						put_toast("Can't insert");}
 					else {
@@ -100,35 +101,37 @@ class View {
 						{
 						var max_gap = -1;
 						for (i in pos[0]...pos[1]){
-							var gap = data.tasks[data.tasks_q.get(i)].gap;
+							var gap = data.tasks.get_gap(i);
 							total_gap += gap;
 							if( gap > max_gap ) { max_gap = gap; max_idx = i;};
 						}
 						}
-						trace('max_idx', max_idx);
+						// trace('max_idx', max_idx);
 						total_gap -= event_duration;
-						// data.items.insert(max_idx+1, new Item(data.tasks.length, event_start, event_duration, TASK));
-						data.tasks_q.insert(max_idx+1, data.tasks.length);
+						// data.items.insert(max_idx+1, new Item(data.tasks.starts.length, event_start, event_duration, TASK));
+						data.tasks.q.insert(max_idx+1, data.tasks.starts.length);
 						// trace('new', event_start, event_duration);
-						trace(data.tasks_q.arr);
-						data.tasks.push(new Task(event_start, event_duration, title, false, r, g, b));
+						trace(data.tasks.q.arr);
+						data.tasks.push(event_start, event_duration, title, false, r, g, b);
 
-						data.tasks[data.tasks_q.get(pos[0]+1)].start = data.tasks[data.tasks_q.get(pos[0])].start + data.tasks[data.tasks_q.get(pos[0])].duration;
+						// trace(data.tasks.length, data.tasks.starts.length);
+						
+						data.tasks.set_start(pos[0]+1, data.tasks.get_start(pos[0]) + data.tasks.get_duration(pos[0]));
 						if(max_idx > (pos[1]+pos[0]) >> 1){
-							data.tasks[data.tasks_q.get(pos[0]+1)].start += total_gap;
+							data.tasks.set_start(pos[0]+1, data.tasks.get_start(pos[0]+1) + total_gap);
 						}
 						else if(max_idx == (pos[1]+pos[0]) >> 1){
-							data.tasks[data.tasks_q.get(pos[0]+1)].start += (total_gap >> 1);
+							data.tasks.set_start(pos[0]+1, data.tasks.get_start(pos[0]+1) + (total_gap >> 1));
 						}
-						// trace('task', data.tasks[data.tasks_q.get(pos[0]+1)].start/60, data.tasks[data.tasks_q.get(pos[0]+1)].duration/60, data.tasks[data.tasks_q.get(pos[0]+1)].title);
+						// trace('task', data.tasks[data.tasks.q.get(pos[0]+1)].start/60, data.tasks[data.tasks.q.get(pos[0]+1)].duration/60, data.tasks[data.tasks.q.get(pos[0]+1)].title);
 						for(i in (pos[0]+2)...(pos[1]+2)){
-							data.tasks[data.tasks_q.get(i)].start = data.tasks[data.tasks_q.get(i-1)].start + data.tasks[data.tasks_q.get(i-1)].duration;
+							data.tasks.set_start(i, data.tasks.get_start(i-1) + data.tasks.get_duration(i-1));
 						}
 						if(max_idx < (pos[1]+pos[0]) >> 1 ){
-							data.tasks[data.tasks_q.get(pos[1]+1)].start += total_gap;
+							data.tasks.set_start(pos[1]+1, data.tasks.get_start(pos[1]+1) + total_gap);
 						}
 						else if(max_idx == (pos[1]+pos[0]) >> 1){
-							data.tasks[data.tasks_q.get(pos[1]+1)].start += (total_gap >> 1);
+							data.tasks.set_start(pos[1]+1, data.tasks.get_start(pos[1]+1) + (total_gap >> 1));
 						}
 
 						display_sequence.resize(0);
@@ -137,12 +140,10 @@ class View {
 			}
 			if(ui.button("Go Back")){
                 // page = 2;
-				for(i in 0...data.tasks_q.length){data.tasks_q.dequeue();}
-				for(item in data.items){data.tasks_q.enqueue(item.idx);}
-				for(i in 0...(data.tasks_q.length-1)){
-					var j = data.tasks_q.get(i);
-					var k = data.tasks_q.get(i+1);
-					data.tasks[j].gap = data.tasks[k].start - data.tasks[j].start - data.tasks[j].duration;
+				// for(i in 0...data.tasks.q.length){data.tasks.q.dequeue();}
+				// for(item in data.items){data.tasks.q.enqueue(item.idx);}
+				for(i in 0...(data.tasks.length-1)){
+					data.tasks.set_gap(i, data.tasks.get_start(i+1) - data.tasks.get_start(i) - data.tasks.get_duration(i));
 				}
 
                 if( backListener != null){

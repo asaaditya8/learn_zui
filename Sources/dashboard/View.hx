@@ -33,18 +33,18 @@ class View {
 			if (ui.panel(Id.handle({selected: true}), "Dashboard")) {
 				ui.text('Tasks');
 				var i = 0;
-				while(i + r < data.tasks_q.length){
+				while(i + r < data.tasks.length){
 					ui.row(ratio);
 					for(j in 0...r){
-						ui.text(data.tasks[data.tasks_q.get(i+j)].title, Align.Center);
+						ui.text(data.tasks.get_title(i+j), Align.Center);
 					}
 					i += r;
 				}
 				ui.row(ratio);
-				for(j in i...data.tasks_q.length){
-					ui.text(data.tasks[data.tasks_q.get(j)].title, Align.Center);
+				for(j in i...data.tasks.length){
+					ui.text(data.tasks.get_title(j), Align.Center);
 				}
-				for(j in data.tasks_q.length...(i+r)){
+				for(j in data.tasks.length...(i+r)){
 					ui.text("", Align.Center);
 				}
 

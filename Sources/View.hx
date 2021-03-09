@@ -25,14 +25,14 @@ class View {
 		ui.row(ratios);
 		ui.text(title);
 		if(ui.button('>')){
-			data.tasks_q.enqueue(data.tasks_q.dequeue());
+			data.tasks.q.enqueue(data.tasks.q.dequeue());
 			// var today = Date.now();
 			// data.tasks[data.tasks_q.get(i)].start = today.getHours() * 60 + today.getMinutes();
-			data.tasks[data.tasks_q.get(0)].start = 0;
-			for(i in 1...data.tasks_q.length){
-				var k = data.tasks_q.get(i);
-				var j = data.tasks_q.get(i-1);
-				data.tasks[k].start = data.tasks[j].start + data.tasks[j].duration + data.tasks[j].gap;
+			data.tasks.set_start(0, 0);
+			for(i in 1...data.tasks.length){
+				// var k = data.tasks_q.get(i);
+				// var j = data.tasks_q.get(i-1);
+				data.tasks.set_start(i, data.tasks.get_start(i-1) + data.tasks.get_duration(i-1) + data.tasks.get_gap(i-1));
 			}
 		}
 		ui.button('+');
@@ -66,7 +66,7 @@ class View {
 				ui.text("Time", Left);
 				ui.text("", Center);
 				if(data.tasks.length > 0){
-					event_row(ui, data, ratios, data.tasks[data.tasks_q.get(0)].title);
+					event_row(ui, data, ratios, data.tasks.get_title(0));
 				}
 			}
 	

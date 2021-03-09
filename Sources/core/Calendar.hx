@@ -26,8 +26,8 @@ class Item {
 }
 
 class Calendar {
-    public var tasks : Array<Task>;
-    public var tasks_q : Queue<Int>;
+    public var tasks : Tasks;
+    // public var tasks_q : Queue<Int>;
     public var overlapping_tasks : Array<Task>;
     public var habits : Array<Habit>;
     public var overlapping_habits : Array<Habit>;
@@ -40,31 +40,31 @@ class Calendar {
     // public var durations : Array<Int>;
 
     public function new() {
-        tasks = [];
-        tasks_q = new Queue<Int>();
+        tasks = new Tasks();
+        // tasks_q = new Queue<Int>();
         overlapping_tasks = [];
         habits = [];
         overlapping_habits = [];
         dags = [];
         jobs = [];
         events = [];
-        items = [];
+        // items = [];
         // starts = [];
         // durations = [];
     }
 
-    static public function binary_search(my_list : Array<Item>, key : Int) : Array<Int> {
-        var large : Int = my_list.length -1;
+    public function binary_search(key : Int) : Array<Int> {
+        var large : Int = tasks.length -1;
         var small : Int = 0;
         var mid = (small + large) >> 1;
 
         while (small <= large){
             mid = (small + large) >> 1 ;
             // trace( small, mid, large, " - ", my_list[mid], "~", key );
-            if (my_list[mid].start < key){
+            if (tasks.get_start(mid) < key){
                 small = mid + 1;
             }
-            else if (my_list[mid].start > key){
+            else if (tasks.get_start(mid) > key){
                 large = mid - 1;
             }
             else{
@@ -72,64 +72,62 @@ class Calendar {
             }
         }
 
-        var value = my_list[mid].start;
+        var value = tasks.get_start(mid);
         var lower = value < key ? mid : mid-1;
         var upper = value > key ? mid : mid+1;
         return [lower, upper];
     }
 
-    public function binary_insert(item: Item){
-        if ( items.length > 0 ){
-            var pos = binary_search(items, item.start);
+    public function binary_insert(start: Int, duration: Int){
+        if ( tasks.length > 0 ){
+            var pos = binary_search(start);
             if (pos[1] == -1) { throw "Can't insert 0"; }
             // left, right = pos;
             
             if (pos[0] < 0){
-                if (item.start + item.duration > items[pos[1]].start) { throw "Can't insert 1";}
-                items.unshift(item);
+                if (start + duration > tasks.get_start(pos[1])) { throw "Can't insert 1";}
+                tasks.q.insert(0, tasks.length);
             }
-            else if (pos[1] >= items.length){
-                if(item.start < items[pos[0]].start + items[pos[0]].duration){ throw "Can't insert 2";}
-                items.push(item);
+            else if (pos[1] >= tasks.length){
+                if(start < tasks.get_start(pos[0]) + tasks.get_duration(pos[0])){ throw "Can't insert 2";}
+                tasks.q.enqueue(tasks.length);
             }
             else{
-                if(item.start < items[pos[0]].start + items[pos[0]].duration){ throw "Can't insert 3";}
-                if(item.start + item.duration > items[pos[1]].start){ throw "Can't insert 4";}
+                if(start < tasks.get_start(pos[0]) + tasks.get_duration(pos[0])){ throw "Can't insert 3";}
+                if(start + duration > tasks.get_start(pos[1])){ throw "Can't insert 4";}
                 
-                items.insert(pos[0] + 1, item);
+                tasks.q.insert(pos[0] + 1, tasks.length);
             }
         }
         else{
-            items.push(item);
+            tasks.q.enqueue(tasks.length);
         }
     }
 
-    public function smallest_sub_of_sum(q: Queue<Int>, x: Int) : Array<Int> {
+    public function smallest_sub_of_sum(x: Int) : Array<Int> {
         // TODO: this works only for tasks
-        for(i in 0...(q.length-1)){
-            var j = q.get(i);
-            var k = q.get(i+1);
-            tasks[j].gap = tasks[k].start - tasks[j].start - tasks[j].duration;
+        for(i in 0...(tasks.length-1)){
+            tasks.set_gap(i, tasks.get_start(i+1) - tasks.get_start(i) - tasks.get_duration(i));
         }
         
         var sum = 0;
-        var min_size = q.length;
+        var min_size = tasks.length;
         var result = [-1, -1];
  
         var begin = 0;
         var end = 0;
-        while (end < (q.length-1)) {
-            while (sum < x && end < (q.length-1)){
-                sum += tasks[q.get(end)].gap;
+        while (end < (tasks.length-1)) {
+            while (sum < x && end < (tasks.length-1)){
+                sum += tasks.get_gap(end);
                 end++;
             }
  
-            while (sum >= x && begin < (q.length-1)) {
+            while (sum >= x && begin < (tasks.length-1)) {
                 if (end - begin < min_size){
                     min_size = end - begin;
                     result[0] = begin; result[1] = end;
                 }
-                sum -= tasks[q.get(begin)].gap;
+                sum -= tasks.get_gap(begin);
                 begin++;
             }
         }
@@ -152,9 +150,9 @@ class Calendar {
             items.push(new Item(i, events[i].start, events[i].duration, EVENT));
         }
 
-        for (i in 0...tasks.length){
-            items.push(new Item(i, tasks[i].start, tasks[i].duration, TASK));
-        }
+        // for (i in 0...tasks.length){
+        //     items.push(new Item(i, tasks[i].start, tasks[i].duration, TASK));
+        // }
 
         for (i in 0...habits.length){
             items.push(new Item(i, habits[i].start, habits[i].duration, HABIT));
@@ -222,7 +220,7 @@ class Calendar {
         for (item in items){
             switch item.type {
                 case TASK:
-                    tasks[item.idx].order = order;
+                    tasks.set_order(item.idx, order);
                     order += 1;
                 case HABIT:
                     habits[item.idx].order = order;
@@ -240,14 +238,14 @@ class Calendar {
             check for overlaps.
         */
         items.resize(0);
-        tasks.sort((a, b) -> a.order - b.order);
+        // tasks.sort((a, b) -> a.order - b.order);
         habits.sort((a, b) -> a.order - b.order);
 
         var i = 0;
         var j = 0;
         while( i < tasks.length && j < habits.length ){
-            if(tasks[i].order < habits[j].order){
-                items.push(new Item(i, 0, tasks[i].duration, TASK));
+            if(tasks.get_order(i) < habits[j].order){
+                items.push(new Item(i, 0, tasks.get_duration(i), TASK));
                 i++;
             }else{
                 items.push(new Item(j, 0, habits[j].duration, HABIT));
@@ -255,14 +253,14 @@ class Calendar {
             }
         }
 
-        while( i < tasks.length ){ items.push(new Item(i, 0, tasks[i].duration, TASK)); }
+        while( i < tasks.length ){ items.push(new Item(i, 0, tasks.get_duration(i), TASK)); }
         while( j < habits.length ){ items.push(new Item(j, 0, habits[j].duration, HABIT)); }
 
         for (item in items){
             item.start = input_time;
             switch item.type {
                 case TASK:
-                    tasks[item.idx].start = input_time;
+                    tasks.set_start(item.idx , input_time);
                 case HABIT:
                     habits[item.idx].start = input_time;
                 case _:

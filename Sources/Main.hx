@@ -1,6 +1,5 @@
 package;
 
-import haxe.SysTools;
 import kha.Assets;
 import kha.Framebuffer;
 import kha.Scheduler;
